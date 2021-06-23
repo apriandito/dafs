@@ -1,0 +1,122 @@
+---
+title: "Exploratory Data Analysis"
+author: "Muhammad Apriandito"
+---
+
+# Install Packages
+```{r}
+# Install Packages
+install.packages(c("tidyverse", "skimr"))
+```
+
+# Load packages
+```{r}
+# Load library
+library(tidyverse)
+library(skimr)
+```
+
+# Load data
+```{r}
+# Load data
+df <- read_csv2("data/bank-marketing.csv")
+```
+
+# Lihat Data
+```{r}
+# Menampilkan 6 baris teratas data
+head(df)
+```
+
+```{r}
+# Melihat tipe data
+glimpse(df)
+```
+
+```{r}
+# Skim data
+skim(df)
+```
+
+# Eksplorasi
+```{r}
+# Melihat Jumlah pelanggan yang berlangganan deposito dan tidak
+df %>%
+  select(y) %>%
+  group_by(y) %>%
+  count %>%
+  ggplot(aes(x = y, y = n, fill = y)) +
+  geom_col()
+```
+
+```{r}
+# Melihat Jumlah pelanggan yang berlangganan deposito dan tidak berdasarkan pekerjaan
+df %>%
+  select(y, job) %>%
+  group_by(y, job) %>%
+  count %>%
+  ggplot(aes(x = y, y = n, fill = job)) +
+  geom_col(position = "dodge") 
+```
+
+```{r}
+# Melihat Jumlah pelanggan yang berlangganan deposito dan tidak berdasarkan status pernikahan
+df %>%
+  select(y, marital) %>%
+  group_by(y, marital) %>%
+  count %>%
+  ggplot(aes(x = y, y = n, fill = marital)) +
+  geom_col(position = "dodge")
+```
+
+```{r}
+# Melihat Jumlah pelanggan yang berlangganan deposito dan tidak berdasarkan promosi sebelumnya
+df %>%
+  select(y, poutcome) %>%
+  group_by(y, poutcome) %>%
+  count %>%
+  ggplot(aes(x = y, y = n, fill = poutcome)) +
+  geom_col(position = "dodge") 
+```
+
+```{r}
+# Melihat hubungn usia, saldo, dan pekerjaan
+df %>%
+  ggplot(aes(x = age, y = balance, color = job)) +
+  geom_point()
+```
+
+```{r}
+# Melihat hubungn usia, saldo, dan berlangganan atau tidak
+df %>%
+  ggplot(aes(x = age, y = balance, color = y)) +
+  geom_point()
+```
+
+```{r}
+# Mencari anomali pada data
+df %>%
+  filter(y == "yes") %>%
+  arrange(duration)
+```
+
+```{r}
+# Fix Data
+anomali <- df %>%
+  group_by(y) %>%
+  filter(y == "yes" & duration < 60)
+anomali
+```
+
+```{r}
+# Hapus data anomali
+df_fix <- df %>%
+  anti_join(anomali) %>%
+  write_csv2("data/bank-marketing-fix.csv")
+```
+```{r}
+df_fix %>%
+  filter(y == "yes") %>%
+  arrange(duration)
+```
+

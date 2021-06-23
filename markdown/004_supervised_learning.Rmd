@@ -12,7 +12,7 @@ Selain Package `tidyverse`, kita juga memerlukan Package `tidymodels` untuk memb
 
 ```{r}
 # Install package
-install.packages(c("tidyverse", "tidymodels"))
+install.packages(c("tidyverse", "tidymodels", "discrim", "themis"))
 ```
 
 ```{r}
@@ -21,6 +21,8 @@ library(tidyverse)
 library(tidymodels)
 library(rpart)
 library(rpart.plot)
+library(themis)
+library(discrim)
 ```
 
 ## Import Data
@@ -28,7 +30,7 @@ Sebelum memulai, mari kita import datanya terlebih dahulu.
 
 ```{r}
 # Import Data
-df <- read_csv2("data/bank-marketing.csv")
+df <- read_csv2("data/bank-marketing-fix.csv")
 ```
 
 Setelah diimport, kita dapat melihat beberapa data pertama menggunakan fungsi ```head()``` , atau menggunakan fungsi ```glimpse()```
@@ -55,7 +57,7 @@ set.seed(1234)
 
 ```{r}
 # Membagi data dengan proporsi 70:30
-df_split <- initial_split(df, prop = 0.8)
+df_split <- initial_split(df, prop = 0.7)
 df_split
 ```
 
@@ -73,7 +75,9 @@ Setelah membagi data menjadi data training dan data testing, kita dapat mulai me
 # Membuat Recipe
 df_recipe <- training(df_split) %>%
   recipe(y ~.) %>%
+  step_downsample(y) %>%
   prep()
+
 df_recipe
 ```
 
@@ -98,19 +102,46 @@ glimpse(df_testing)
 Tahap selanjutnya adalah menetukan algoritma apa yang akan kita gunakan untuk melakukan prediksi klasifikasi. Di modul ini, kita akan menggunakan algoritma decision tree.
 
 ```{r}
-# Menset model
-dt_mod <-  decision_tree() %>%
+# Menset model decision tree
+dt <-  decision_tree() %>%
   set_engine("rpart") %>% 
   set_mode("classification") 
 ```
+
+```{r}
+rf <-  rand_forest(mode = "classification") %>%
+    set_engine("randomForest")
+```
+
+```{r}
+# Setting the Naive Bayes Model
+nb <-  naive_Bayes() %>% 
+  set_engine("naivebayes") %>% 
+  translate()
+```
+
 
 ## Membuat Workflow
 Jika sudah menentukan alur pemrosesan data dan algoritma yang akan digunakan, kita dapat menyatukannya menjadi 1 workflow. 
 
 ```{r}
 # Membuat Workflow
-workflow <- workflow() %>%
-  add_model(dt_mod) %>%
+workflow_dt <- workflow() %>%
+  add_model(dt) %>%
+  add_recipe(df_recipe)
+```
+
+```{r}
+# Membuat Workflow
+workflow_rf <- workflow() %>%
+  add_model(rf) %>%
+  add_recipe(df_recipe)
+```
+
+```{r}
+# Membuat Workflow
+workflow_nb <- workflow() %>%
+  add_model(nb) %>%
   add_recipe(df_recipe)
 ```
 
@@ -118,31 +149,68 @@ workflow <- workflow() %>%
 Jika workflow sudah sesuai dan berhasil dibuat, kita dapat langsung melakukan proses training dan melakukan prediksi pada data testing.
 
 ```{r}
-# Training Model
-dt <- fit(workflow, training(df_split))
-
-# Prediksi ke data test
-predict(dt, testing(df_split))
+# Training Model dt
+model_dt <- fit(workflow_dt, training(df_split))
 ```
 
 ```{r}
-tree_fit <- dt %>% 
+# Lihat Model dt
+tree_fit <- model_dt %>% 
   pull_workflow_fit()
-rpart.plot(tree_fit$fit)
+rpart.plot(tree_fit$fit,roundint=FALSE)
 ```
+
+
+```{r}
+model_rf <- fit(workflow_rf, training(df_split))
+```
+
+
+```{r}
+# Training model nb
+model_nb <- fit(workflow_nb, training(df_split))
+```
+
+
+
+
 
 ##  Mengukur Performa Model
 Tahapan terakhir yang dilakukan yaitu melakukan penilaian model. Penilaian ini digunakan untuk mengukur seberapa baik model kita dalam memprediksi dengan membandingkan nilai hasil prediksi dengan nilai yang sebenarnya. 
 
 ```{r}
 # Menentukan metrik evaluasi untuk mengukur performa model
-multi_metrics <- metric_set(accuracy, precision, recall, specificity)
-# Melihat performa model
-dt %>%
+multi_metrics <- metric_set(accuracy, 
+                            precision, 
+                            recall, 
+                            specificity, 
+                            f_meas)
+```
+
+```{r}
+# Melihat performa model decision tree
+model_dt %>%
   predict(df_testing) %>%
   bind_cols(df_testing) %>%
   multi_metrics(truth = y, estimate = .pred_class)
 ```
+
+```{r}
+# Melihat performa model random forest
+model_rf %>%
+  predict(df_testing) %>%
+  bind_cols(df_testing) %>%
+  multi_metrics(truth = y, estimate = .pred_class)
+```
+
+```{r}
+# Melihat performa model naive bayes
+model_nb %>%
+  predict(df_testing) %>%
+  bind_cols(df_testing) %>%
+  multi_metrics(truth = y, estimate = .pred_class)
+```
+
 
 Ternyata, model yang kita bangun memiki akurasi yang cukup baik, yaitu diatas 80%. Namun, tidak dengan nilai s
 
@@ -161,7 +229,8 @@ Dapat kita lihat bahwa belum ada kolom yang menyatakan bahwa pelanggan tersebut 
 
 ```{r}
 # Melakukan prediksi dan menyimpan nilai hasil prediksi
-df_predicted <- predict(dt, df_new) %>%
+df_predicted <- predict(model_rf, df_new) %>%
+  
   bind_cols(df_new) %>%
   write_csv("data/bank-marketing_predicted.csv")
 
@@ -175,5 +244,6 @@ dari 10 nasabah baru, ternyata ada 4 orang nasbah yang diprediksi akan berlangga
 # Siapa yang akan berlangganan
 df_subscribe <- df_predicted %>%
   filter(.pred_class == "yes")
+
 print(df_subscribe)
 ```
