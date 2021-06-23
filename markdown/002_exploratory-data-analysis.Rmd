@@ -42,6 +42,11 @@ Pada tahap ini, data yang kita inginkan sudah ter-import dalam environment R. Ki
 head(df)
 ```
 
+```{r}
+# Melihat rangkuman Statistik
+summary(df)
+```
+
 ## Fungsi umum pada dplyr
 
 Package `dplyr` menyediakan banyak fungsi yang dapat digunakan untuk melakukan EDA. Di modul ini kita akan belajar beberapa fungsi-fungsi umum dari Package `dplyr`
