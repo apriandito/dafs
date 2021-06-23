@@ -12,7 +12,13 @@ Selain Package `tidyverse`, kita juga memerlukan Package `tidymodels` untuk memb
 
 ```{r}
 # Install package
-install.packages(c("tidyverse", "tidymodels", "discrim", "themis"))
+install.packages(c("tidyverse", 
+                   "tidymodels", 
+                   "discrim", 
+                   "themis", 
+                   "rpart.plot",
+                   "randomForest",
+                   "naivebayes"))
 ```
 
 ```{r}
