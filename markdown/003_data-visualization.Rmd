@@ -1,18 +1,7 @@
 ---
-title: "Modul 3: Visualisasi Data"
-author: "Muhammad Apriandito - Technaut Education"
-output:
-  prettydoc::html_pretty:
-    theme: architect
-    highlight: github
-editor_options: 
-  chunk_output_type: inline
+title: "Visualisasi Data"
+author: "Muhammad Apriandito"
 ---
-
-```{r setup, include=FALSE}
-# Set Knit
-knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
-```
 
 Visualisasi Data didefinisikan sebagai teknik untuk mempresentasikan data dalam bentuk grafik atau bagan untuk menampilkan informasi yang tersembunyi dalam data agar lebih mudah dipahami oleh pembaca / pengguna laporan. 
 
@@ -173,6 +162,12 @@ ggplot(data = df, aes(x = y, fill = y)) +
 ```
 
 ### Membuat Interaktif dengan Plotly
+
+```{r}
+# Install Plotly
+install.packages("plotly")
+```
+
 ```{r message=FALSE, warning=FALSE}
 # Load package Plotly
 library(plotly)
@@ -182,6 +177,7 @@ library(plotly)
 # Chart interaktif
 line_chart <- ggplot(data = df, aes(x = duration, y = balance)) +
   geom_line(colour = "#00bfc4")
+
 ggplotly(line_chart)
 ```
 
@@ -196,9 +192,10 @@ df %>%
   slice_head(n = 5) %>%
   ggplot(aes(x = job, y = n, fill = job)) +
   geom_col() +
-  labs(title = "Jobs of customers who subscribe to long-term deposits", 
-       y = "No of Customer", 
-       x = "") +
-  theme(legend.position = "none") 
+  labs(
+    title = "Jobs of customers who subscribe to long-term deposits",
+    y = "No of Customer",
+    x = ""
+  ) +
+  theme(legend.position = "none")
 ```
-

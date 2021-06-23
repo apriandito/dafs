@@ -1,11 +1,11 @@
 ---
-title: "Data Exploration and Visualization"
+title: "Exploratory Data Analysis"
 author: "Muhammad Apriandito"
 ---
 
 Exploratory Data Analysis (EDA) merupakan proses eksplorasi data yang bertujuan untuk memahami isi dan komponen penyusun data. Ada banyak teknik yang dapat digunakan untuk mengekplorasi data, namun tidap ada prosedur tetap dalam melakukannya. Semakin banyak kita dapat mengumpulkan informasi dari data yang akan diolah, maka semakin baik pula pemahaman kita terhadapnya. 
 
-Pada praktek kali ini kita akan belajar untuk melakukan EDA data menggunakan Package  ```dplyr```.  Package yang dikembangkan oleh Hadley Wickham dan Roman Francois ini menyediakan banyak fungsi yang mudah digunakan untuk melakukan transformasi data. Karena tujuannya untuk melakukan transformasi data, Package `dplyr` ini menjadi sangat berguna pda tahap analisis dan eksplorasi data. 
+Pada praktek kali ini kita akan belajar untuk melakukan EDA data menggunakan Package `dplyr`.  Package yang dikembangkan oleh Hadley Wickham dan Roman Francois ini menyediakan banyak fungsi yang mudah digunakan untuk melakukan transformasi data. Karena tujuannya untuk melakukan transformasi data, Package `dplyr` ini menjadi sangat berguna pda tahap analisis dan eksplorasi data. 
 
 Sebelum dapat digunakan, Package `dplyr` harus kita install dan load terlebih dulu.
 
@@ -162,4 +162,23 @@ df_pipe <- df %>%
   summarise(mean(balance))
 
 print(df_pipe)
+```
+
+## Package Lainnya
+
+### SkimR
+
+```{r}
+# Install skimr package
+install.packages("skimr")
+```
+
+```{r}
+# Load skimr
+library(skimr)
+```
+
+```{r}
+# Skim data
+skim(df)
 ```

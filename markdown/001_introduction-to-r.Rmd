@@ -4,7 +4,7 @@ author: "Muhammad Apriandito"
 ---
 
 ## Selamat Datang di R
-Di modul ini kita akan belajar dasar - dasar pemrograman R. Seperti yang sudah dijelaskan, ada beberapa tipe file R yang dapat digunakan untuk menjalankan kodingan R yaitu: R script dan R Markdown. Keseluruhan modul ini akan menggunakan tipe format R Markdown. Dengan format R Markdown, code R dijalankan pada cell yang dikatakan "chunk". Untuk menambahkan chunk, kita dapat menggunakan tab "insert" atau menekan tombol ```ctrl + alt + i``` untuk windows atau ```command + alt + i``` untuk mac. 
+Di modul ini kita akan belajar dasar - dasar pemrograman R. Seperti yang sudah dijelaskan, ada beberapa tipe file R yang dapat digunakan untuk menjalankan kodingan R yaitu: R script dan R Markdown. Keseluruhan modul ini akan menggunakan tipe format R Markdown. Dengan format R Markdown, code R dijalankan pada cell yang dikatakan "chunk". Untuk menambahkan chunk, kita dapat menggunakan tab "insert" atau menekan tombol `ctrl + alt + i` untuk windows atau `command + alt + i` untuk mac. 
 
 ```{r}
 # Ini adalah chunk
